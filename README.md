@@ -24,7 +24,9 @@ and use separate chaining to solve the conflict problem flexibly.
 - 2022.04.11 - 3
   - Update README. Chek code style and type annotation.
 - 2022.04.09 - 2
-  - Update README. Add test sections. Add test coverage and modify the code for better coverage.
+  - Update README. 
+  - Add test sections. 
+  - Add test coverage and modify the code for better coverage.
 - 2022.04.08 - 1
   - Update README. Add formal sections.
 - 2022.04.07 - 0
