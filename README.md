@@ -1,7 +1,7 @@
 # Flying Red Panda - lab 1 - variant 7
 
-- The example project with limited implementation on dictionary based on hash-map 
-(collision resolution: separate chaining).
+- The example project with limited implementation on dictionary based
+on hash-map (collision resolution: separate chaining).
 
 ## Project structure
 
@@ -10,7 +10,8 @@
 
 ## Features
 
-- Using a hashmap to implement various operations of the dictionary, and use separate chaining to solve the conflict problem flexibly。
+- Using a hashmap to implement various operations of the dictionary,
+and use separate chaining to solve the conflict problem flexibly。
 
 ## Contribution
 
