@@ -31,21 +31,21 @@ The example project with limited implementation on dictionary based on hash-map 
 ## Design notes
 
 -  Implementation restrictions
-  - hashFuction(key): 
+  - hashFuction(key):
     Determine the mapping index of the element in the hashmap according to the key. As for different types of the key, if the type of key is int, using the mapping function directly. If the type of key is float, using the integer part of the key to determine the hashmap index. If the type of key is str, definiting the mapping with the first character of the string. 
-  - add(key, value): 
+  - add(key, value):
     The type of key can be char, int, or float. If key has already existed in the dictionay, value will be modified according to the parameter.
-  - remove(key): 
+  - remove(key):
     Remove an element by key.
-  - access_member(key): 
+  - access_member(key):
     Get an element's value in the dictionary by key.
-  - dict_to_hash(dict): 
+  - dict_to_hash(dict):
     Parameter 'dict' should be dictionary type in python.
-  - filter_even(): 
+  - filter_even():
     Determine whether the value corresponding to the key in the dictionary is a number type, if the number is even, remove the element from the dictionary.
-  - map(func): 
+  - map(func):
     Pay attention to the different value types of the elements in the dictionary, some operations can only operate on numeric types but not on string types, and some operations can only operate on character types but not on numeric types. If the element value in the dictionary has both numeric and string types, attention need to be paid on the choice of parameter 'func'.
-  - reduce(func, initValue): 
+  - reduce(func, initValue):
     Different 'initValue' are required for different 'func'. Pay attention to the data type of dictionary elements and select the appropriate operation function 'func'.
 
 - Analysis advantages and disadvantages of unittest and PBT tests
