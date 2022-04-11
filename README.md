@@ -1,6 +1,6 @@
 # Flying Red Panda - lab 1 - variant 7
 
-The example project with limited implementation on dictionary based on hash-map (collision resolution: separate chaining).
+- The example project with limited implementation on dictionary based on hash-map (collision resolution: separate chaining).
 
 ## Project structure
 
@@ -30,7 +30,7 @@ The example project with limited implementation on dictionary based on hash-map 
 
 ## Design notes
 
--  Implementation restrictions
+- Implementation restrictions
   - hashFuction(key): Determine the mapping index of the element in the hashmap according to the key. As for different types of the key, if the type of key is int, using the mapping function directly. If the type of key is float, using the integer part of the key to determine the hashmap index. If the type of key is str, definiting the mapping with the first character of the string. 
   - add(key, value): The type of key can be char, int, or float. If key has already existed in the dictionay, value will be modified according to the parameter.
   - remove(key): Remove an element by key.
