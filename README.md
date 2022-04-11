@@ -1,6 +1,7 @@
 # Flying Red Panda - lab 1 - variant 7
 
-- The example project with limited implementation on dictionary based on hash-map (collision resolution: separate chaining).
+- The example project with limited implementation on dictionary based on hash-map 
+(collision resolution: separate chaining).
 
 ## Project structure
 
@@ -31,7 +32,7 @@
 ## Design notes
 
 - Implementation restrictions
-  - hashFuction(key): Determine the mapping index of the element in the hashmap according to the key. As for different types of the key, if the type of key is int, using the mapping function directly. If the type of key is float, using the integer part of the key to determine the hashmap index. If the type of key is str, definiting the mapping with the first character of the string. 
+  - hashFuction(key): Determine the mapping index of the element in the hashmap according to the key. As for different types of the key, if the type of key is int, using the mapping function directly. If the type of key is float, using the integer part of the key to determine the hashmap index. If the type of key is str, definiting the mapping with the first character of the string.
   - add(key, value): The type of key can be char, int, or float. If key has already existed in the dictionay, value will be modified according to the parameter.
   - remove(key): Remove an element by key.
   - access_member(key): Get an element's value in the dictionary by key.
@@ -43,4 +44,3 @@
 - Analysis advantages and disadvantages of unittest and PBT tests
   - Advantages: After the unit test is completed, the actual result is compared with the expected result (assertion), so as to determine whether the execution of the use case is passed or not. The unit test framework provides a wealth of assertion methods. Code coverage can be obtained through unit testing to modify test cases to check the correctness and integrity of the code.
   - Disadvantages: Testers need to be familiar with the interface information of the project, which takes time to understand the code to better ensure the coverage of use cases. In addition, it is difficult for test cases to cover all code branches at one time, and test cases need to be added and modified to get better coverage.
-
