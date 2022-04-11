@@ -10,7 +10,7 @@ based on hash-map (collision resolution: separate chaining).
 
 ## Features
 
-- Using a hashmap to implement various operations of the dictionary,
+Using a hashmap to implement various operations of the dictionary,
 and use separate chaining to solve the conflict problem flexibly.
 
 ## Contribution
