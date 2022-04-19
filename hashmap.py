@@ -5,16 +5,35 @@ class Node(object):
         self.next = next
 
 
-class HashMap(object):
-    empty = object()
+# for hashmap's iteration
 
-    def __init__(self, size=10, dict=None):
+class Iter(object):
+    def __init__(self, hashmap):
+        self.hashmap = hashmap
+        self.iter_n = 0
+
+    def __next__(self):
+        if self.iter_n < len(self.hashmap.key_existed):
+            key = self.hashmap.key_existed[self.iter_n]
+            value = self.hashmap.access_member(key)
+            node = Node(key, value)
+            self.iter_n += 1
+            return node
+        else:
+            raise StopIteration()  # signals "the end"
+
+
+class HashMap(object):
+    bucket_init = object()
+
+    def __init__(self, dict=None, size=10):
+        # the amount of bucket defaults to 10
+        # bucket amount can be resized by the parameter 'size'
         self.bucket_size = size  # hashmap bucket size
-        self.bucket = [self.empty] * self.bucket_size
+        self.bucket = [self.bucket_init] * self.bucket_size
         self.key_existed = []  # store existed key in the dictionary
         if dict is not None:  # if dictionary is provided
             self.dict_to_hash(dict)
-        self.iter_n = 0  # for iteration
 
     def hashFuction(self, key):
         if type(key) == str:
@@ -30,7 +49,7 @@ class HashMap(object):
         hKey = self.hashFuction(key)
         node = Node(key, value)
 
-        if self.bucket[hKey] == self.empty:
+        if self.bucket[hKey] == self.bucket_init:
             self.bucket[hKey] = node
             self.key_existed.append(key)
         else:
@@ -59,7 +78,7 @@ class HashMap(object):
             if q:
                 self.bucket[hKey] = q
             else:
-                self.bucket[hKey] = self.empty
+                self.bucket[hKey] = self.bucket_init
             return
         while q:
             if q.key == key:
@@ -94,7 +113,7 @@ class HashMap(object):
         if len(self.key_existed) == 0:
             return res
         for item in self.bucket:
-            if item == self.empty:
+            if item == self.bucket_init:
                 continue
             p = item
             while p:
@@ -118,12 +137,12 @@ class HashMap(object):
             self.remove(key)
 
     # 6. Map structure by specific function
-    def map(self, func):
-        res = {}
+    def map(self, func=None):
+        if func is None:
+            return
         for key in self.key_existed:
             value = self.access_member(key)
-            res[key] = func(value)
-        return res
+            self.add(key, func(value))
 
     # 7. Reduce
     def reduce(self, func, initValue):
@@ -135,23 +154,14 @@ class HashMap(object):
 
     # 8. iterator
     def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.iter_n < len(self.key_existed):
-            key = self.key_existed[self.iter_n]
-            value = self.access_member(self.key_existed[self.iter_n])
-            node = Node(key, value)
-            self.iter_n += 1
-            return node
-        raise StopIteration()  # signals "the end"
+        return Iter(self)
 
     # 9. empty
-    def emptyHM(self):
+    def empty(self):
         return None
 
     # 10. concat
-    def concatHM(self, hashMap1=None, hashMap2=None):
+    def concat(self, hashMap1=None, hashMap2=None):
         if hashMap1 is None:
             return hashMap2
         if hashMap2 is None:

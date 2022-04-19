@@ -7,10 +7,10 @@ from hashmap import HashMap
 class TestFoo(unittest.TestCase):
 
     def test_init(self):
-        hm = HashMap(45)
+        hm = HashMap(size=45)
         self.assertEqual(hm.bucket_size, 45)
 
-        hm = HashMap(10, {2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66})
+        hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66})
         hKey = hm.hashFuction(2)
         self.assertEqual(hm.bucket[hKey].value, 'abc')
         # hm.hashFuction(7) == hm.hashFuction(2)
@@ -36,9 +36,7 @@ class TestFoo(unittest.TestCase):
         self.assertEqual(hm.access_member(2), 100)
 
     def test_remove(self):
-        hm = HashMap(
-            10,
-            {2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66, 12: 'bca'})
+        hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66, 12: 'bca'})
         hm.remove(17)
         self.assertEqual(len(hm.key_existed), 5)
 
@@ -55,16 +53,16 @@ class TestFoo(unittest.TestCase):
         # key 9 doesn't exist
         hm.remove(9)
         hKey = hm.hashFuction(9)
-        self.assertEqual(hm.bucket[hKey], hm.empty)
+        self.assertEqual(hm.bucket[hKey], hm.bucket_init)
 
     def test_access_size(self):
-        hm = HashMap(10, {2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66})
+        hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66})
         self.assertEqual(hm.access_size(), 4)
         hm.remove('ocean')
         self.assertEqual(hm.access_size(), 3)
 
     def test_access_member(self):
-        hm = HashMap(10, {2: 'abc', 'omiga': 43, 7: 'cba'})
+        hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba'})
         self.assertEqual(hm.access_member(7), 'cba')
         self.assertEqual(hm.access_member(100), None)
 
@@ -95,7 +93,7 @@ class TestFoo(unittest.TestCase):
             hm.hash_to_dic(), {})
 
     def test_filter_even(self):
-        hm = HashMap(10, {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
+        hm = HashMap({'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
         hm.filter_even()
         self.assertEqual(hm.access_size(), 3)
 
@@ -104,30 +102,58 @@ class TestFoo(unittest.TestCase):
         self.assertEqual(hm.hash_to_dic(), {})
 
     def test_map(self):
-        hm = HashMap(10, {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
-        hmMap = hm.map(str)
+        # test: function is None
+        hm = HashMap({'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
+        hm.map()
         self.assertEqual(
-            hmMap,
+            hm.hash_to_dic(),
+            {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
+
+        # test: same dictionary with same function
+        hm1 = HashMap({1: 'a', 2: 'b'})
+        hm2 = HashMap({2: 'b', 1: 'a'})
+        self.assertEqual(hm1.hash_to_dic(), hm2.hash_to_dic())
+        hm1.map(ord)
+        hm2.map(ord)
+        self.assertEqual(hm1.hash_to_dic(), {1: 97, 2: 98})
+        self.assertEqual(hm1.hash_to_dic(), hm2.hash_to_dic())
+
+        # test: function : str
+        hm = HashMap({'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
+        hm.map(str)
+        self.assertEqual(
+            hm.hash_to_dic(),
             {'a': '3.14', 'b': '43', 'c': '22', 'd': '66', 'e': 'hello'})
 
-        hm = HashMap(10, {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
-        hmMap = hm.map(lambda x: x+2)
-        self.assertEqual(hmMap, {'a': 3, 'b': 4, 'c': 5, 'd': 6, 'e': 7})
+        # test: function : lambda x: x+2
+        hm = HashMap({'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
+        hm.map(lambda x: x+2)
+        self.assertEqual(
+            hm.hash_to_dic(), {'a': 3, 'b': 4, 'c': 5, 'd': 6, 'e': 7})
 
     def test_reduce(self):
-        hm = HashMap(10, {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
+        hm = HashMap({'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
         hmReduce = hm.reduce(lambda x, y: x+y, 0)
         self.assertEqual(hmReduce, 15)
 
-        hm = HashMap(
-            10,
-            {1: 'Hello', 2: 'This', 3: 'Is', 4: 'A', 5: 'Dictionary'})
+        hm = HashMap({1: 'Hello', 2: 'This', 3: 'Is', 4: 'A', 5: 'Dictionary'})
         hmReduce = hm.reduce(lambda x, y: x+y, '')
         self.assertEqual(hmReduce, 'HelloThisIsADictionary')
 
     def test_iter(self):
-        hm = HashMap(10, {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
-        dict = hm.hash_to_dic()
+        dict = {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'}
+        hm = HashMap(dict)
+        res_out = {}
+        res_in = {}
+        for node_out in hm:
+            for node_in in hm:
+                res_in[node_in.key] = node_in.value
+            self.assertEqual(dict, res_in)
+            res_in.clear()
+
+            res_out[node_out.key] = node_out.value
+        self.assertEqual(dict, res_out)
+
         res = {}
         for node in hm:
             res[node.key] = node.value
@@ -143,20 +169,20 @@ class TestFoo(unittest.TestCase):
         )
     def test_monoid_associativity(self, dictA, dictB, dictC):
         hm = HashMap()
-        hmA = HashMap(10, dictA)
-        hmB = HashMap(10, dictB)
-        hmC = HashMap(10, dictC)
+        hmA = HashMap(dictA)
+        hmB = HashMap(dictB)
+        hmC = HashMap(dictC)
         # (a•b)•c = a•(b•c)
         self.assertEqual(
-            hm.concatHM(hm.concatHM(hmA, hmB), hmC),
-            hm.concatHM(hmA, hm.concatHM(hmB, hmC)))
+            hm.concat(hm.concat(hmA, hmB), hmC),
+            hm.concat(hmA, hm.concat(hmB, hmC)))
 
     @given(dict=strategies.dictionaries(
         strategies.integers(), strategies.integers()))
     def test_monoid_identify(self, dict):
-        hmA = HashMap(10, dict)
+        hmA = HashMap(dict)
         hm = HashMap()
         # a•e = a
-        self.assertEqual(hmA.concatHM(hmA, hm.emptyHM()), hmA)
+        self.assertEqual(hmA.concat(hmA, hm.empty()), hmA)
         # e•a = a
-        self.assertEqual(hmA.concatHM(hm.emptyHM(), hmA), hmA)
+        self.assertEqual(hmA.concat(hm.empty(), hmA), hmA)

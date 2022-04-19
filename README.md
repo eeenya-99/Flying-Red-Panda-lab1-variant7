@@ -21,6 +21,9 @@ and use separate chaining to solve the conflict problem flexibly.
 
 ## Changelog
 
+- 2022.04.18 - 4
+  - Update README. Modify part of functions and add test cases
+  as suggested.
 - 2022.04.11 - 3
   - Update README. Chek code style and type annotation.
 - 2022.04.09 - 2
