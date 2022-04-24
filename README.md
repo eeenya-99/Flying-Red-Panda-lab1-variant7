@@ -13,6 +13,22 @@ based on hash-map (collision resolution: separate chaining).
 Using a hashmap to implement various operations of the dictionary,
 and use separate chaining to solve the conflict problem flexibly.
 
+- `PTB:` -- test_init
+- `PTB:` -- test_hashFuction
+- `PTB:` -- test_add
+- `PTB:` -- test_remove
+- `PTB:` -- test_access_size
+- `PTB:` -- test_access_member
+- `PTB:` -- test_dict_to_hash
+- `PTB:` -- test_hash_to_dict
+- `PTB:` -- test_filter
+- `PTB:` -- test_map
+- `PTB:` -- test_reduce
+- `PTB:` -- test_iter
+- `PTB:` -- test_monoid_associativity
+- `PTB:` -- test_monoid_identify
+
+
 ## Contribution
 
 - Enya Shi (212320002@hdu.edu.cn) -- Complete the 'hashmap.py'.
@@ -21,6 +37,9 @@ and use separate chaining to solve the conflict problem flexibly.
 
 ## Changelog
 
+- 2022.04.24 - 5
+  - Update README. Modify part of functions and add test cases
+  as suggested.
 - 2022.04.18 - 4
   - Update README. Modify part of functions and add test cases
   as suggested.
@@ -54,9 +73,10 @@ and use separate chaining to solve the conflict problem flexibly.
   by key.
   - dict_to_hash(dict): Parameter 'dict' should be dictionary
   type in python.
-  - filter_even(): Determine whether the value corresponding to
-  the key in the dictionary is a number type, if the number is
-  even, remove the element from the dictionary.
+  - filter(func): Determine whether the value corresponding to
+  the key in the dictionary satisfy the predicate 'func'. If the
+  value doesn't satisfy the 'func', remove the element from the
+  dictionary.
   - map(func): Pay attention to the different value types of the
   elements in the dictionary, some operations can only operate on
   numeric types but not on string types, and some operations can
@@ -66,6 +86,9 @@ and use separate chaining to solve the conflict problem flexibly.
   - reduce(func, initValue): Different 'initValue' are required
   for different 'func'. Pay attention to the data type of dictionary
   elements and select the appropriate operation function 'func'.
+  - empty(): A mutable operation on the structure. Empty the structure.
+  - concat(hashMap): A mutable operation on the structure. Connect 
+  another structure to the original structure
 
 - Analysis advantages and disadvantages of unittest and PBT tests
   - Advantages: After the unit test is completed, the actual result

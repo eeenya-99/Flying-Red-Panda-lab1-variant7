@@ -108,7 +108,7 @@ class HashMap(object):
             self.add(key, value)
 
     # 4.2 Conversion from/to built-in dictionary: to_dict
-    def hash_to_dic(self):
+    def hash_to_dict(self):
         res = {}
         if len(self.key_existed) == 0:
             return res
@@ -124,16 +124,16 @@ class HashMap(object):
                     p = p.next
         return res
 
-    # 5. Filter data structure by specific predicate: even
-    def filter_even(self):
-        if len(self.key_existed) == 0:
+    # 5. Filter data structure by specific predicate
+    def filter(self, func=None):
+        if (len(self.key_existed) == 0) or func is None:
             return
-        keyOfEven = []
+        keyFunc = []
         for key in self.key_existed:
             value = self.access_member(key)
-            if (not type(value) is str) and (value % 2 == 0):
-                keyOfEven.append(key)
-        for key in keyOfEven:
+            if not func(value):
+                keyFunc.append(key)
+        for key in keyFunc:
             self.remove(key)
 
     # 6. Map structure by specific function
@@ -158,14 +158,10 @@ class HashMap(object):
 
     # 9. empty
     def empty(self):
-        return None
+        for key in self.key_existed:
+            self.remove(key)
 
     # 10. concat
-    def concat(self, hashMap1=None, hashMap2=None):
-        if hashMap1 is None:
-            return hashMap2
-        if hashMap2 is None:
-            return hashMap1
-        for key in hashMap2.key_existed:
-            hashMap1.add(key, hashMap2.access_member(key))
-        return hashMap1
+    def concat(self, hashMap):
+        for key in hashMap.key_existed:
+            self.add(key, hashMap.access_member(key))

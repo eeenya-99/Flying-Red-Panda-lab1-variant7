@@ -4,6 +4,12 @@ from hypothesis import given,  strategies
 from hashmap import HashMap
 
 
+def is_even(value):
+    if (not type(value) is str) and (value % 2 == 0):
+        return value % 2 == 0
+    return False
+
+
 class TestFoo(unittest.TestCase):
 
     def test_init(self):
@@ -77,7 +83,7 @@ class TestFoo(unittest.TestCase):
         self.assertEqual(hm.access_member(4), 'four')
         self.assertEqual(hm.access_size(), 5)
 
-    def test_hash_to_dic(self):
+    def test_hash_to_dict(self):
         hm = HashMap()
         hm.add('omiga', 10)
         hm.add(2, 'abc')
@@ -85,51 +91,61 @@ class TestFoo(unittest.TestCase):
         hm.add('ocean', 2000)
         self.assertEqual(len(hm.key_existed), 3)
         self.assertEqual(
-            hm.hash_to_dic(),
+            hm.hash_to_dict(),
             {'omiga': 1000, 2: 'abc', 'ocean': 2000})
 
         hm = HashMap()
         self.assertEqual(
-            hm.hash_to_dic(), {})
+            hm.hash_to_dict(), {})
 
-    def test_filter_even(self):
-        hm = HashMap({'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
-        hm.filter_even()
-        self.assertEqual(hm.access_size(), 3)
+    def test_filter(self):
+        # test: function is None
+        dict = {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'}
+        hm = HashMap(dict)
+        hm.filter()
+        self.assertEqual(hm.hash_to_dict(), dict)
 
-        hm = HashMap()
-        hm.filter_even()
-        self.assertEqual(hm.hash_to_dic(), {})
+        # test: even
+        hm = HashMap(dict)
+        hm.filter(is_even)
+        self.assertEqual(hm.hash_to_dict(), {'c': 22, 'd': 66})
+
+        # test: the first letter of the value is not 'n'/'c'/'t'
+        dict = {'a': 'tiger', 'b': 'rabbit',
+                'c': 'cat', 'd': 'dog', 'e': 'duck'}
+        hm = HashMap(dict)
+        hm.filter(lambda x: x[0] in 'nct')
+        self.assertEqual(hm.hash_to_dict(), {'a': 'tiger', 'c': 'cat'})
 
     def test_map(self):
         # test: function is None
         hm = HashMap({'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
         hm.map()
         self.assertEqual(
-            hm.hash_to_dic(),
+            hm.hash_to_dict(),
             {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
 
         # test: same dictionary with same function
         hm1 = HashMap({1: 'a', 2: 'b'})
         hm2 = HashMap({2: 'b', 1: 'a'})
-        self.assertEqual(hm1.hash_to_dic(), hm2.hash_to_dic())
+        self.assertEqual(hm1.hash_to_dict(), hm2.hash_to_dict())
         hm1.map(ord)
         hm2.map(ord)
-        self.assertEqual(hm1.hash_to_dic(), {1: 97, 2: 98})
-        self.assertEqual(hm1.hash_to_dic(), hm2.hash_to_dic())
+        self.assertEqual(hm1.hash_to_dict(), {1: 97, 2: 98})
+        self.assertEqual(hm1.hash_to_dict(), hm2.hash_to_dict())
 
         # test: function : str
         hm = HashMap({'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
         hm.map(str)
         self.assertEqual(
-            hm.hash_to_dic(),
+            hm.hash_to_dict(),
             {'a': '3.14', 'b': '43', 'c': '22', 'd': '66', 'e': 'hello'})
 
         # test: function : lambda x: x+2
         hm = HashMap({'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
         hm.map(lambda x: x+2)
         self.assertEqual(
-            hm.hash_to_dic(), {'a': 3, 'b': 4, 'c': 5, 'd': 6, 'e': 7})
+            hm.hash_to_dict(), {'a': 3, 'b': 4, 'c': 5, 'd': 6, 'e': 7})
 
     def test_reduce(self):
         hm = HashMap({'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
@@ -168,21 +184,30 @@ class TestFoo(unittest.TestCase):
             strategies.integers(), strategies.integers()),
         )
     def test_monoid_associativity(self, dictA, dictB, dictC):
-        hm = HashMap()
-        hmA = HashMap(dictA)
-        hmB = HashMap(dictB)
-        hmC = HashMap(dictC)
+        hmA1 = HashMap(dictA)
+        hmB1 = HashMap(dictB)
+        hmC1 = HashMap(dictC)
+        hmA2 = HashMap(dictA)
+        hmB2 = HashMap(dictB)
+        hmC2 = HashMap(dictC)
         # (a•b)•c = a•(b•c)
-        self.assertEqual(
-            hm.concat(hm.concat(hmA, hmB), hmC),
-            hm.concat(hmA, hm.concat(hmB, hmC)))
+        hmA1.concat(hmB1)
+        hmA1.concat(hmC1)
+        # (a•b)•c = a•(b•c)
+        hmB2.concat(hmC2)
+        hmA2.concat(hmB2)
+        self.assertEqual(hmA1.hash_to_dict(), hmA2.hash_to_dict())
 
     @given(dict=strategies.dictionaries(
         strategies.integers(), strategies.integers()))
     def test_monoid_identify(self, dict):
         hmA = HashMap(dict)
-        hm = HashMap()
+        hmB = HashMap(dict)
+        hm = HashMap({0: 'test'})
+        hm.empty()
         # a•e = a
-        self.assertEqual(hmA.concat(hmA, hm.empty()), hmA)
+        hmA.concat(hm)
+        self.assertEqual(hmA.hash_to_dict(), dict)
         # e•a = a
-        self.assertEqual(hmA.concat(hm.empty(), hmA), hmA)
+        hm.concat(hmB)
+        self.assertEqual(hm.hash_to_dict(), dict)
