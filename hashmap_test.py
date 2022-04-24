@@ -110,7 +110,7 @@ class TestFoo(unittest.TestCase):
         hm.filter(is_even)
         self.assertEqual(hm.hash_to_dict(), {'c': 22, 'd': 66})
 
-        # test: the first letter of the value is not 'n'/'c'/'t'
+        # test: the first letter of the value is 'n'/'c'/'t'
         dict = {'a': 'tiger', 'b': 'rabbit',
                 'c': 'cat', 'd': 'dog', 'e': 'duck'}
         hm = HashMap(dict)
