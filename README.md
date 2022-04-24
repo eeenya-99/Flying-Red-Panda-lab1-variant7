@@ -28,7 +28,6 @@ and use separate chaining to solve the conflict problem flexibly.
 - `PTB:` -- test_monoid_associativity
 - `PTB:` -- test_monoid_identify
 
-
 ## Contribution
 
 - Enya Shi (212320002@hdu.edu.cn) -- Complete the 'hashmap.py'.
@@ -87,7 +86,7 @@ and use separate chaining to solve the conflict problem flexibly.
   for different 'func'. Pay attention to the data type of dictionary
   elements and select the appropriate operation function 'func'.
   - empty(): A mutable operation on the structure. Empty the structure.
-  - concat(hashMap): A mutable operation on the structure. Connect 
+  - concat(hashMap): A mutable operation on the structure. Connect
   another structure to the original structure
 
 - Analysis advantages and disadvantages of unittest and PBT tests
