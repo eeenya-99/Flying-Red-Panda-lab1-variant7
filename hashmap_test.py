@@ -1,10 +1,13 @@
+from typing import Mapping, Union, Optional
 import unittest
 from hypothesis import given,  strategies
 
-from hashmap import HashMap
+from hashmap import HashMap, Node
+
+dictType = Mapping[Union[str, int, float], Union[str, int, float]]
 
 
-def is_even(value):
+def is_even(value: Union[str, int, float]) -> bool:
     if (not type(value) is str) and (value % 2 == 0):
         return value % 2 == 0
     return False
@@ -12,36 +15,38 @@ def is_even(value):
 
 class TestFoo(unittest.TestCase):
 
-    def test_init(self):
+    def test_init(self) -> None:
         hm = HashMap(size=45)
         self.assertEqual(hm.bucket_size, 45)
 
         hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66})
         hKey = hm.hashFuction(2)
         self.assertEqual(hm.bucket[hKey].value, 'abc')
-        # hm.hashFuction(7) == hm.hashFuction(2)
-        self.assertEqual(hm.bucket[hKey].next.value, 'cba')
+        nextNode: Optional[Node] = hm.bucket[hKey].next
+        if nextNode is not None:
+            self.assertEqual(nextNode.value, 'cba')
 
         hKey = hm.hashFuction('omiga')
         self.assertEqual(hm.bucket[hKey].value, 43)
-        # hm.hashFuction('omiga') == hm.hashFuction('ocean')
-        self.assertEqual(hm.bucket[hKey].next.value, 66)
+        nextNode = hm.bucket[hKey].next
+        if nextNode is not None:
+            self.assertEqual(nextNode.value, 66)
 
-    def test_hashFuction(self):
+    def test_hashFuction(self) -> None:
         hm = HashMap()
         self.assertEqual(hm.hashFuction(2), 9)
         self.assertEqual(hm.hashFuction(7), 9)
         self.assertEqual(hm.hashFuction('omiga'), 1)
         self.assertEqual(hm.hashFuction(2.14), 9)
 
-    def test_add(self):
+    def test_add(self) -> None:
         hm = HashMap()
         hm.add(2, 'abc')
         self.assertEqual(hm.access_member(2), 'abc')
         hm.add(2, 100)
         self.assertEqual(hm.access_member(2), 100)
 
-    def test_remove(self):
+    def test_remove(self) -> None:
         hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66, 12: 'bca'})
         hm.remove(17)
         self.assertEqual(len(hm.key_existed), 5)
@@ -59,22 +64,22 @@ class TestFoo(unittest.TestCase):
         # key 9 doesn't exist
         hm.remove(9)
         hKey = hm.hashFuction(9)
-        self.assertEqual(hm.bucket[hKey], hm.bucket_init)
+        self.assertEqual(hm.bucket[hKey].key, None)
 
-    def test_access_size(self):
+    def test_access_size(self) -> None:
         hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba', 'ocean': 66})
         self.assertEqual(hm.access_size(), 4)
         hm.remove('ocean')
         self.assertEqual(hm.access_size(), 3)
 
-    def test_access_member(self):
+    def test_access_member(self) -> None:
         hm = HashMap({2: 'abc', 'omiga': 43, 7: 'cba'})
         self.assertEqual(hm.access_member(7), 'cba')
         self.assertEqual(hm.access_member(100), None)
 
-    def test_dict_to_hash(self):
+    def test_dict_to_hash(self) -> None:
         hm = HashMap()
-        dict = {'omiga': 43, 7: 'cba', 'ocean': 66, 8: 'hello'}
+        dict: dictType = {'omiga': 43, 7: 'cba', 'ocean': 66, 8: 'hello'}
         hm.dict_to_hash(dict)
         self.assertEqual(hm.access_member(7), 'cba')
         self.assertEqual(hm.access_size(), 4)
@@ -83,7 +88,7 @@ class TestFoo(unittest.TestCase):
         self.assertEqual(hm.access_member(4), 'four')
         self.assertEqual(hm.access_size(), 5)
 
-    def test_hash_to_dict(self):
+    def test_hash_to_dict(self) -> None:
         hm = HashMap()
         hm.add('omiga', 10)
         hm.add(2, 'abc')
@@ -98,9 +103,9 @@ class TestFoo(unittest.TestCase):
         self.assertEqual(
             hm.hash_to_dict(), {})
 
-    def test_filter(self):
+    def test_filter(self) -> None:
         # test: function is None
-        dict = {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'}
+        dict: dictType = {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'}
         hm = HashMap(dict)
         hm.filter()
         self.assertEqual(hm.hash_to_dict(), dict)
@@ -117,7 +122,7 @@ class TestFoo(unittest.TestCase):
         hm.filter(lambda x: x[0] in 'nct')
         self.assertEqual(hm.hash_to_dict(), {'a': 'tiger', 'c': 'cat'})
 
-    def test_map(self):
+    def test_map(self) -> None:
         # test: function is None
         hm = HashMap({'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'})
         hm.map()
@@ -147,7 +152,7 @@ class TestFoo(unittest.TestCase):
         self.assertEqual(
             hm.hash_to_dict(), {'a': 3, 'b': 4, 'c': 5, 'd': 6, 'e': 7})
 
-    def test_reduce(self):
+    def test_reduce(self) -> None:
         hm = HashMap({'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
         hmReduce = hm.reduce(lambda x, y: x+y, 0)
         self.assertEqual(hmReduce, 15)
@@ -156,8 +161,8 @@ class TestFoo(unittest.TestCase):
         hmReduce = hm.reduce(lambda x, y: x+y, '')
         self.assertEqual(hmReduce, 'HelloThisIsADictionary')
 
-    def test_iter(self):
-        dict = {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'}
+    def test_iter(self) -> None:
+        dict: dictType = {'a': 3.14, 'b': 43, 'c': 22, 'd': 66, 'e': 'hello'}
         hm = HashMap(dict)
         res_out = {}
         res_in = {}
@@ -183,7 +188,9 @@ class TestFoo(unittest.TestCase):
         dictC=strategies.dictionaries(
             strategies.integers(), strategies.integers()),
         )
-    def test_monoid_associativity(self, dictA, dictB, dictC):
+    def test_monoid_associativity(
+        self, dictA: dictType,
+            dictB: dictType, dictC: dictType) -> None:
         hmA1 = HashMap(dictA)
         hmB1 = HashMap(dictB)
         hmC1 = HashMap(dictC)
@@ -200,7 +207,7 @@ class TestFoo(unittest.TestCase):
 
     @given(dict=strategies.dictionaries(
         strategies.integers(), strategies.integers()))
-    def test_monoid_identify(self, dict):
+    def test_monoid_identify(self, dict: dictType) -> None:
         hmA = HashMap(dict)
         hmB = HashMap(dict)
         hm = HashMap({0: 'test'})

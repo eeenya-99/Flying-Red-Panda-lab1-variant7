@@ -1,18 +1,30 @@
+from typing import Union, Dict, Optional, Mapping, Any, List
+from collections.abc import Callable
+
+mapType = Mapping[Union[str, int, float], Union[str, int, float]]
+usualType = Union[str, int, float]
+dictType = Dict[Union[str, int, float], Union[str, int, float]]
+
+
 class Node(object):
-    def __init__(self, key=None, value=None, next=None):
+    def __init__(
+                self,
+                key: Optional[usualType] = None,
+                value: Optional[usualType] = None,
+                next: Optional["Node"] = None):
         self.key = key
         self.value = value
         self.next = next
 
-
 # for hashmap's iteration
 
+
 class Iter(object):
-    def __init__(self, hashmap):
+    def __init__(self, hashmap: "HashMap"):
         self.hashmap = hashmap
         self.iter_n = 0
 
-    def __next__(self):
+    def __next__(self) -> "Node":
         if self.iter_n < len(self.hashmap.key_existed):
             key = self.hashmap.key_existed[self.iter_n]
             value = self.hashmap.access_member(key)
@@ -24,32 +36,46 @@ class Iter(object):
 
 
 class HashMap(object):
-    bucket_init = object()
-
-    def __init__(self, dict=None, size=10):
-        # the amount of bucket defaults to 10
-        # bucket amount can be resized by the parameter 'size'
+    def __init__(self, dict: Optional[mapType] = None, size: int = 10):
+        '''
+        Initialize HashMap
+        :param dict: initialize by the given dictionary (defaults is None)
+        :param size: bucket size of HashMap (defaults is 10)
+        '''
         self.bucket_size = size  # hashmap bucket size
-        self.bucket = [self.bucket_init] * self.bucket_size
-        self.key_existed = []  # store existed key in the dictionary
+        self.bucket = [Node()] * self.bucket_size
+        # 'key_existed' store existed key in the dictionary
+        self.key_existed: List[usualType] = []
         if dict is not None:  # if dictionary is provided
             self.dict_to_hash(dict)
 
-    def hashFuction(self, key):
+    def hashFuction(self, key: usualType) -> int:
+        '''
+        Get HashMap address based on key value
+        :param key: the key of the element
+        :return: HashMap address
+        '''
+        hf = 0
         if type(key) == str:
-            key = ord(key[0])
+            hf = ord(key[0])
         if type(key) == float:
-            key = int(key)
-        hf = 8 * key + 3
+            hf = int(key)
+        if type(key) == int:
+            hf = key
+        hf = 8 * hf + 3
         hf %= self.bucket_size
         return hf
 
-    # 1. Add a new element
-    def add(self, key, value):
+    def add(self, key: usualType, value: usualType) -> None:
+        '''
+        Add a new element to the HashMap
+        :param key: the key of the element
+        :param value: the value of the element
+        '''
         hKey = self.hashFuction(key)
         node = Node(key, value)
 
-        if self.bucket[hKey] == self.bucket_init:
+        if self.bucket[hKey].key is None:
             self.bucket[hKey] = node
             self.key_existed.append(key)
         else:
@@ -65,8 +91,11 @@ class HashMap(object):
             p.next = node
             self.key_existed.append(key)
 
-    # 2. Remove an element
-    def remove(self, key):
+    def remove(self, key: usualType) -> None:
+        '''
+        Remove an element from HashMap by key
+        :param key: the key of the element
+        '''
         if key not in self.key_existed:
             return
         hKey = self.hashFuction(key)
@@ -75,57 +104,67 @@ class HashMap(object):
         p = self.bucket[hKey]
         q = p.next
         if p.key == key:
+            del p
             if q:
                 self.bucket[hKey] = q
             else:
-                self.bucket[hKey] = self.bucket_init
+                self.bucket[hKey] = Node()
             return
         while q:
             if q.key == key:
                 p.next = q.next
+                del q
                 return
             p = q
             q = p.next
 
-    # 3.1 Access: size
-    def access_size(self):
+    def access_size(self) -> int:
+        '''
+        Access the number of elements in the HashMap
+        '''
         return len(self.key_existed)
 
-    # 3.2 Access: member
-    def access_member(self, key):
+    def access_member(self, key: usualType) -> Any:
+        '''
+        Access a element's value by its key
+        :param key: the key of the element
+        :return: the value corresponding to the key in the HashMap
+        '''
         if key not in self.key_existed:
             return None
         hKey = self.hashFuction(key)
-        p = self.bucket[hKey]
+        p: Optional[Node] = self.bucket[hKey]
         while p:
             if p.key == key:
                 return p.value
             p = p.next
 
-    # 4.1 Conversion from/to built-in dictionary: from_dict
-    def dict_to_hash(self, dict):
+    def dict_to_hash(self, dict: mapType) -> None:
+        '''
+        Conversion from built-in dictionary
+        :param dict: the given built-in dictionary
+        '''
         for key, value in dict.items():
             self.add(key, value)
 
-    # 4.2 Conversion from/to built-in dictionary: to_dict
-    def hash_to_dict(self):
-        res = {}
+    def hash_to_dict(self) -> dictType:
+        '''
+        Conversion to built-in dictionary
+        :return: dictionary conversed from HashMap
+        '''
+        res: dictType = {}
         if len(self.key_existed) == 0:
             return res
-        for item in self.bucket:
-            if item == self.bucket_init:
-                continue
-            p = item
-            while p:
-                res[p.key] = p.value
-                if p.next is None:
-                    break
-                else:
-                    p = p.next
+        for key in self.key_existed:
+            value = self.access_member(key)
+            res[key] = value
         return res
 
-    # 5. Filter data structure by specific predicate
-    def filter(self, func=None):
+    def filter(self, func: Optional[Callable[..., bool]] = None) -> None:
+        '''
+        Filter data structure by specific predicate
+        :param func: predicate (specific filter function)
+        '''
         if (len(self.key_existed) == 0) or func is None:
             return
         keyFunc = []
@@ -136,32 +175,50 @@ class HashMap(object):
         for key in keyFunc:
             self.remove(key)
 
-    # 6. Map structure by specific function
-    def map(self, func=None):
+    def map(self, func: Optional[Callable[..., Any]] = None) -> None:
+        '''
+        Map structure by specific function
+        :param func: specific map function
+        '''
         if func is None:
             return
         for key in self.key_existed:
             value = self.access_member(key)
             self.add(key, func(value))
 
-    # 7. Reduce
-    def reduce(self, func, initValue):
+    def reduce(self, func: Callable[..., Any], initValue: usualType) -> Any:
+        '''
+        Reduce the HashMap to one value
+        :param func: specific reduce method
+        :param initValue: initial value for reduce
+        :return: result of the reduce
+        '''
         res = initValue
         for key in self.key_existed:
             value = self.access_member(key)
             res = func(res, value)
         return res
 
-    # 8. iterator
-    def __iter__(self):
+    def __iter__(self) -> Iter:
+        '''
+        Get an iterator
+        :return: an object of class Iter
+        '''
         return Iter(self)
 
     # 9. empty
-    def empty(self):
+    def empty(self) -> None:
+        '''
+        Operation in property monoid identify
+        '''
         for key in self.key_existed:
             self.remove(key)
 
     # 10. concat
-    def concat(self, hashMap):
+    def concat(self, hashMap: "HashMap") -> None:
+        '''
+        Operation in property monoid associativity
+        :param hashMap: another HashMap concats to the current HashMap
+        '''
         for key in hashMap.key_existed:
             self.add(key, hashMap.access_member(key))

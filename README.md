@@ -36,11 +36,13 @@ and use separate chaining to solve the conflict problem flexibly.
 
 ## Changelog
 
+- 2022.05.02 - 6
+  - Update README and CI config. Add type hints and docstrings for all functions.
 - 2022.04.24 - 5
-  - Update README. Modify part of functions and add test cases
+  - Update README. Modify part of functions and add test cases.
   as suggested.
 - 2022.04.18 - 4
-  - Update README. Modify part of functions and add test cases
+  - Update README. Modify part of functions and add test cases.
   as suggested.
 - 2022.04.11 - 3
   - Update README. Chek code style and type annotation.
