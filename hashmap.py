@@ -1,16 +1,17 @@
 from typing import Union, Dict, Optional, Mapping, Any, List
 from collections.abc import Callable
 
-mapType = Mapping[Union[str, int, float], Union[str, int, float]]
-usualType = Union[str, int, float]
-dictType = Dict[Union[str, int, float], Union[str, int, float]]
+defineType = Union[str, int, float]
+
+mapType = Mapping[defineType, defineType]
+dictType = Dict[defineType, defineType]
 
 
 class Node(object):
     def __init__(
                 self,
-                key: Optional[usualType] = None,
-                value: Optional[usualType] = None,
+                key: Optional[defineType] = None,
+                value: Optional[defineType] = None,
                 next: Optional["Node"] = None):
         self.key = key
         self.value = value
@@ -45,11 +46,11 @@ class HashMap(object):
         self.bucket_size = size  # hashmap bucket size
         self.bucket = [Node()] * self.bucket_size
         # 'key_existed' store existed key in the dictionary
-        self.key_existed: List[usualType] = []
+        self.key_existed: List[defineType] = []
         if dict is not None:  # if dictionary is provided
             self.dict_to_hash(dict)
 
-    def hashFuction(self, key: usualType) -> int:
+    def hashFuction(self, key: defineType) -> int:
         '''
         Get HashMap address based on key value
         :param key: the key of the element
@@ -66,7 +67,7 @@ class HashMap(object):
         hf %= self.bucket_size
         return hf
 
-    def add(self, key: usualType, value: usualType) -> None:
+    def add(self, key: defineType, value: defineType) -> None:
         '''
         Add a new element to the HashMap
         :param key: the key of the element
@@ -91,7 +92,7 @@ class HashMap(object):
             p.next = node
             self.key_existed.append(key)
 
-    def remove(self, key: usualType) -> None:
+    def remove(self, key: defineType) -> None:
         '''
         Remove an element from HashMap by key
         :param key: the key of the element
@@ -124,7 +125,7 @@ class HashMap(object):
         '''
         return len(self.key_existed)
 
-    def access_member(self, key: usualType) -> Any:
+    def access_member(self, key: defineType) -> Any:
         '''
         Access a element's value by its key
         :param key: the key of the element
@@ -186,7 +187,7 @@ class HashMap(object):
             value = self.access_member(key)
             self.add(key, func(value))
 
-    def reduce(self, func: Callable[..., Any], initValue: usualType) -> Any:
+    def reduce(self, func: Callable[..., Any], initValue: defineType) -> Any:
         '''
         Reduce the HashMap to one value
         :param func: specific reduce method

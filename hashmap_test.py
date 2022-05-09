@@ -4,10 +4,11 @@ from hypothesis import given,  strategies
 
 from hashmap import HashMap, Node
 
-dictType = Mapping[Union[str, int, float], Union[str, int, float]]
+defineType = Union[str, int, float]
+dictType = Mapping[defineType, defineType]
 
 
-def is_even(value: Union[str, int, float]) -> bool:
+def is_even(value: defineType) -> bool:
     if (not type(value) is str) and (value % 2 == 0):
         return value % 2 == 0
     return False

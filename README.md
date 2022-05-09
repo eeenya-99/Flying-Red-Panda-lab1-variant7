@@ -36,6 +36,8 @@ and use separate chaining to solve the conflict problem flexibly.
 
 ## Changelog
 
+- 2022.05.08 - 7
+  - Update README. Data type change to configurable.
 - 2022.05.02 - 6
   - Update README and CI config. Add type hints and docstrings for all functions.
 - 2022.04.24 - 5
